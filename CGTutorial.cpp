@@ -25,14 +25,20 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-float angleX = 0.0; // Glaube Winkel um die das Objekt gedreehtr wird x
-float angleY = 0.0; // Glaube Winkel um die das Objekt gedreehtr wird y
-float angleZ = 0.0; // Glaube Winkel um die das Objekt gedreehtr wird z
+float angleX = 0.0; 
+float angleY = 0.0; 
+float angleZ = 0.0; 
 
-float angleZSeq1 = 0.0;
-float angleZSeq2 = 0.0;
-float angleZSeq3 = 0.0;
-float angleYSeq1 = 0.0;
+float neigungX = 0.0;
+float neigungU = 0.0;
+
+glm::vec3 neigungXVec = glm::vec3(0, 1, 0);
+
+
+// the key states. These variables will be zero
+//when no key is being presses
+float deltaAngle = 0.0f;
+float deltaMove = 0;
 
 bool keys[1024];
 
@@ -41,15 +47,28 @@ bool keys[1024];
 glm::mat4 Projection;
 glm::mat4 View;
 glm::mat4 Model;
+glm::mat4 Door;
+
 GLuint programID;
+
+float angle = 0.0;
+GLuint textureBrick;
+GLuint textureDoor;
+GLuint textureGrass;
+GLuint textureRoof;
+GLuint textureWindow;
+GLuint textureSky;
+
+
+unsigned int textureID;
+string m_fileNames[6];
+GLuint m_textureObj;
 
 /* CURSER VARIABLES */
 bool enteredDoor = false;
 bool rightPosition = false;
 bool clicked = false;
-
-
-
+bool initialised = false;
 
 /* WRITE DOWN AN ERROR MESSAGE IN CONSOLE */
 void error_callback(int error, const char* description)
@@ -78,7 +97,6 @@ void do_movement()
 	{
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
-
 	if (keys[GLFW_KEY_X])
 	{
 		angleX++;
@@ -90,6 +108,16 @@ void do_movement()
 	if (keys[GLFW_KEY_Z])
 	{
 		angleZ++;
+	}
+	if (keys[GLFW_KEY_UP])
+	{
+		if (neigungX <= -5) {} //<--- magic number verkleinern 
+		else {neigungX -= 0.1f; }
+	}
+	if(keys[GLFW_KEY_DOWN])
+	{
+		if (neigungX >= 5) {} //<--- magic number verkleiner
+		else{neigungX += 0.1f; }
 	}
 }
 
@@ -138,6 +166,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		angleZ++;
 	}
+
+	if (keys[GLFW_KEY_UP])
+	{
+		if (neigungX <= -24.9) {}
+		else { neigungX -= 0.1f; }
+	}
+	if (keys[GLFW_KEY_DOWN])
+	{
+		if (neigungX >= 24.9) {}
+		else { neigungX += 0.1f; }
+	}
 }
 
 /* CREATES THE VIEW(CAMERA); THE MODELS(OBJECTS) */
@@ -155,6 +194,7 @@ void sendMVP()
 	glUniformMatrix4fv(glGetUniformLocation(programID, "P"), 1, GL_FALSE, &Projection[0][0]);
 }
 
+/* Defines the correct version */
 void instantiateVersion()
 {
 	glfwInit();
@@ -168,34 +208,44 @@ void instantiateVersion()
 void drawHouse() {
 	glm::mat4 Save = Model;
 
-	/* Draw the door*/
+	/* Draw the door
 	Model = glm::scale(Model, glm::vec3(0.5, 1.1, 0.05)); 
 	sendMVP();
 	drawCube();
 	Model = Save;
+
+	if (initialised == false) {
+		initialised = true;
+		Door = Model;
+
+		for (int i = 0; i < 16; ++i) {
+			//cout << Door[i] << endl;
+		}
+	}
 	
 	/* Draw front - right*/
-	Model = glm::scale(Model, glm::vec3(2.5, 1, 0.05));
 	Model = glm::translate(Model, glm::vec3(1.2, 0, 0));
 	sendMVP();
-	drawCube();
+	drawHouse2();
+	drawRoof();
+	drawDoor();
 	Model = Save;
 	
-	/* Draw front - left*/
+	/* Draw front - left
 	Model = glm::scale(Model, glm::vec3(2.5, 1, 0.05));
 	Model = glm::translate(Model, glm::vec3(-1.2, 0, 0));
 	sendMVP();
 	drawCube();
 	Model = Save;
 
-	/* Draw side - right*/
+	/* Draw side - right
 	Model = glm::scale(Model, glm::vec3(0.05, 1, 25));
 	Model = glm::translate(Model, glm::vec3(110, 0, 1));
 	sendMVP();
 	drawCube();
 	Model = Save;
 
-	/* Draw side - left*/
+	/* Draw side - left
 	Model = glm::scale(Model, glm::vec3(0.05, 1, 25));
 	Model = glm::translate(Model, glm::vec3(-110, 0, 1));
 	sendMVP();
@@ -203,28 +253,26 @@ void drawHouse() {
 	Model = Save;
 
 
-	/* Draw back - right*/
+	/* Draw back - right
 	Model = glm::scale(Model, glm::vec3(3, 1, 0.05));
 	Model = glm::translate(Model, glm::vec3(0.95, 0, 1000));
 	sendMVP();
 	drawCube();
 	Model = Save;
 
-	/* Draw back - left*/
+	/* Draw back - left
 	Model = glm::scale(Model, glm::vec3(3, 1, 0.05));
 	Model = glm::translate(Model, glm::vec3(-0.95, 0, 1000));
 	sendMVP();
 	drawCube();
-	Model = Save;
+	Model = Save;*/
 	
 }
-
+ 
+/* changes the Curser icon ig the users curser is over the door */
 static void curserPosionCallback(GLFWwindow* window, double xpos, double ypos)
 {
-
-	//cout << xpos << ", " << ypos << endl;
-
-	if ((xpos > (SCREEN_WIDTH/2 - 80)) && (xpos < (SCREEN_WIDTH / 2 + 80)) && (ypos > (SCREEN_HEIGHT / 2 - 60)) && (ypos < (SCREEN_HEIGHT/2 + 60)))
+	if ((xpos > (SCREEN_WIDTH/2 - 80)) && (xpos < (SCREEN_WIDTH / 2 + 80)) && (ypos > (SCREEN_HEIGHT/2 - 60)) && (ypos < (SCREEN_HEIGHT/2 + 60)))
 	{
 		unsigned char pixels[16 * 16 * 4];
 		memset(pixels, 0xff, sizeof(pixels));
@@ -236,36 +284,232 @@ static void curserPosionCallback(GLFWwindow* window, double xpos, double ypos)
 		glfwSetCursor(window, curser);
 		rightPosition = true;
 	}
-	rightPosition = false;
+	else
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		rightPosition = false;
+	}
 }
 
+/* checks whether the user has entered the window */
 void curserEnterCallback(GLFWwindow* window, int entered)
 {
 	if (entered)
 	{
 		enteredDoor = true;
 	}
-	enteredDoor = false;
+	else 
+	{
+		enteredDoor = false;
+	}
 }
 
+/* checks whether the user clicked the left button of the mouse*/
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		clicked = true;
 	}
-	clicked = false;
-}
-
-
-void openDoor()
-{
-	if ((enteredDoor == 1) && (rightPosition == 1) && (clicked = 1))
+	else
 	{
-		cout << "User klicked" << endl;
-
+		clicked = false;
 	}
 }
+
+/* will open the door if the user entered the window and the house and clicked on the door with the left mouse button */
+void openDoor()
+{
+	if (clicked == true && enteredDoor == true &&rightPosition == true)
+	{
+		Door = glm::rotate(Door, 5.0f, glm::vec3(10, 0, 0));
+		cout << "Door open" << endl;
+	}
+}
+
+/*
+void renderScene(void) {
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_TEXTURE_2D);
+
+	// Sky
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, textureSky);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTranslatef(0, 0, -10);
+	glBegin(GL_QUADS);
+	glTexCoord3f(0.0, 1.0, 0.1);  glVertex3f(-10, 10, 0);
+	glTexCoord3f(1.0, 1.0, 0.1);  glVertex3f(10, 10, 0);
+	glTexCoord3f(1.0, 0.0, 0.1);  glVertex3f(10, -10, 0);
+	glTexCoord3f(0.0, 0.0, 0.1);  glVertex3f(-10, -10, 0);
+	glEnd();
+	glPopMatrix();
+
+	// Grass
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, textureGrass);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTranslatef(0, 0, -6);
+	glRotatef(angle, 0.0, 1.0, 0.0);
+	glBegin(GL_QUADS);
+	glTexCoord3f(0.0, 70.0, 1);  glVertex3f(-50, -1.5, 50);
+	glTexCoord3f(0.0, 0.0, -1);  glVertex3f(-50, -1.5, -50);
+	glTexCoord3f(70.0, 0.0, -1);  glVertex3f(50, -1.5, -50);
+	glTexCoord3f(70.0, 70.0, 1);  glVertex3f(50, -1.5, 50);
+	glEnd();
+	glPopMatrix();
+
+	// Front side
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, textureBrick);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTranslatef(0, 0, -6);
+	glRotatef(angle, 0.0, 1.0, 0.0);
+	glBegin(GL_QUADS);  // Wall
+	glTexCoord3f(0.0, 2.0, 0.1);  glVertex3f(-2, 0, 1);
+	glTexCoord3f(4.0, 2.0, 0.1);  glVertex3f(2, 0, 1);
+	glTexCoord3f(4.0, 0.0, 0.1);  glVertex3f(2, -1.5, 1);
+	glTexCoord3f(0.0, 0.0, 0.1);  glVertex3f(-2, -1.5, 1);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textureRoof);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);  // Roof
+	glTexCoord3f(0.0, 2.0, 0); glVertex3f(-2.2, 0.5, 0);
+	glTexCoord3f(4.0, 2.0, 0); glVertex3f(2.2, 0.5, 0);
+	glTexCoord3f(4.0, 0.0, 1.25); glVertex3f(2.2, -0.1, 1.25);
+	glTexCoord3f(0.0, 0.0, 1.25); glVertex3f(-2.2, -0.1, 1.25);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textureDoor);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);  // Door
+	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(-0.3, -0.4, 1.0001);
+	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(0.3, -0.4, 1.0001);
+	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(0.3, -1.5, 1.0001);
+	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(-0.3, -1.5, 1.0001);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textureWindow);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);  // Window Left
+	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(-1.5, -0.3, 1.0001);
+	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(-0.75, -0.3, 1.0001);
+	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(-0.75, -0.8, 1.0001);
+	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(-1.5, -0.8, 1.0001);
+	glEnd();
+
+	glBegin(GL_QUADS);  // Window Right
+	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(1.5, -0.3, 1.0001);
+	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(0.75, -0.3, 1.0001);
+	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(0.75, -0.8, 1.0001);
+	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(1.5, -0.8, 1.0001);
+	glEnd();
+	glPopMatrix();
+
+	// Back side
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textureBrick);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTranslatef(0, 0, -6);
+	glRotatef(angle, 0.0, 1.0, 0.0);
+	glBegin(GL_QUADS);  // Wall
+	glTexCoord3f(0.0, 2.0, -1);  glVertex3f(-2, 0, -1);
+	glTexCoord3f(4.0, 2.0, -1);  glVertex3f(2, 0, -1);
+	glTexCoord3f(4.0, 0.0, -1);  glVertex3f(2, -1.5, -1);
+	glTexCoord3f(0.0, 0.0, -1);  glVertex3f(-2, -1.5, -1);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textureRoof);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);  // Roof
+	glTexCoord3f(0.0, 2.0, 0); glVertex3f(-2.2, 0.5, 0);
+	glTexCoord3f(4.0, 2.0, 0); glVertex3f(2.2, 0.5, 0);
+	glTexCoord3f(4.0, 0.0, -1.25); glVertex3f(2.2, -0.1, -1.25);
+	glTexCoord3f(0.0, 0.0, -1.25); glVertex3f(-2.2, -0.1, -1.25);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textureWindow);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);  // Window Left
+	glTexCoord3f(0.0, 1.0, -1.0001); glVertex3f(-1.5, -0.3, -1.0001);
+	glTexCoord3f(1.0, 1.0, -1.0001); glVertex3f(-0.75, -0.3, -1.0001);
+	glTexCoord3f(1.0, 0.0, -1.0001); glVertex3f(-0.75, -0.8, -1.0001);
+	glTexCoord3f(0.0, 0.0, -1.0001); glVertex3f(-1.5, -0.8, -1.0001);
+	glEnd();
+
+	glBegin(GL_QUADS);  // Window Right
+	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(1.5, -0.3, -1.0001);
+	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(0.75, -0.3, -1.0001);
+	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(0.75, -0.8, -1.0001);
+	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(1.5, -0.8, -1.0001);
+	glEnd();
+	glPopMatrix();
+
+	// Right side
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, textureBrick);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTranslatef(0, 0, -6);
+	glRotatef(angle, 0.0, 1.0, 0.0);
+	glBegin(GL_QUADS);  // Wall
+	glTexCoord3f(0.0, 2.0, 1); glVertex3f(2, 0, 1);
+	glTexCoord3f(2.0, 2.0, -1); glVertex3f(2, 0, -1);
+	glTexCoord3f(2.0, 0.0, -1); glVertex3f(2, -1.5, -1);
+	glTexCoord3f(0.0, 0.0, 1); glVertex3f(2, -1.5, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);  // Wall Upper
+	glTexCoord3f(0.0, 1.0, 0); glVertex3f(2, 0.5, 0);
+	glTexCoord3f(1.0, 0.0, 1); glVertex3f(2, 0, 1);
+	glTexCoord3f(-1.0, 0.0, -1); glVertex3f(2, 0, -1);
+	glEnd();
+	glPopMatrix();
+
+	// Left side
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, textureBrick);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTranslatef(0, 0, -6);
+	glRotatef(angle, 0.0, 1.0, 0.0);
+	glBegin(GL_QUADS);  // Wall
+	glTexCoord3f(0.0, 2.0, 1);    glVertex3f(-2, 0, 1);
+	glTexCoord3f(2.0, 2.0, -1);    glVertex3f(-2, 0, -1);
+	glTexCoord3f(2.0, 0.0, -1);    glVertex3f(-2, -1.5, -1);
+	glTexCoord3f(0.0, 0.0, 1);    glVertex3f(-2, -1.5, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);  // Wall Upper
+	glTexCoord3f(0.0, 1.0, 0);    glVertex3f(-2, 0.5, 0);
+	glTexCoord3f(1.0, 0.0, 1);    glVertex3f(-2, 0, 1);
+	glTexCoord3f(-1.0, 0.0, -1);    glVertex3f(-2, 0, -1);
+	glEnd();
+	glPopMatrix();
+
+	//glutSwapBuffers();
+}
+*/
+
+/* if the user press "esc" it will close the window */
+void processInput(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
 int main(void)
 {
 	// Initialise GLFW
@@ -283,12 +527,7 @@ int main(void)
 	// Open a window and create its OpenGL context
 	// glfwWindowHint vorher aufrufen, um erforderliche Resourcen festzulegen
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Projekt: Taide", NULL, NULL);
-
-	glfwSetCursorPosCallback(window, curserPosionCallback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	glfwSetCursorEnterCallback(window, curserEnterCallback);
-	glfwSetMouseButtonCallback(window, mouseButtonCallback);
-
+	
 	if (!window)
 	{
 		glfwTerminate();
@@ -305,6 +544,13 @@ int main(void)
 		fprintf(stderr, "Failed to initialize GLEW\n");
 		return -1;
 	}
+	glfwSetCursorPosCallback(window, curserPosionCallback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetCursorEnterCallback(window, curserEnterCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
+	/* Is used for the Skybox */
+
 
 	// Auf Keyboard-Events reagieren
 	glfwSetKeyCallback(window, key_callback);
@@ -323,9 +569,13 @@ int main(void)
 	//Load the texture
 	GLuint Texture = loadBMP_custom("door.bmp");
 
+
 	// Eventloop
 	while (!glfwWindowShouldClose(window))
 	{
+		/* finds out wheather the esc button is pressed */
+		processInput(window);
+
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -343,10 +593,20 @@ int main(void)
 		// Camera matrix
 		// View ist die Camera
 
-		View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		View = glm::lookAt(cameraPos, cameraPos + cameraFront + (neigungXVec * neigungX), cameraUp);
 
-	    //Bewege den Roboterarm
 
+		/* if(camera neigung größer als 5, keine Bewegung mehr) */ //<----------------------------------------- Prüfen, ob es größer als 45 grad ist
+		/*mat4 ViewTemp(1.0f);
+		View *= ViewTemp;
+		ViewTemp = glm::rotate(ViewTemp, neigungX, glm::vec3(1, 0, 0));*/
+
+		//Model = glm::rotate(Model, neigungX, glm::vec3(1, 0, 0));
+
+		
+		/* Var, die die temporären Daten speichert */
+		
+	    //Dreht das Haus
 		Model = glm::mat4(1.0f);
 		Model = glm::rotate(Model, angleX, glm::vec3(1, 0, 0));
 		Model = glm::rotate(Model, angleY, glm::vec3(0, 1, 0));
@@ -354,10 +614,6 @@ int main(void)
 		drawHouse();
 		openDoor();
 
-		/* Ermöglichung der Rotation mit den Tasten x,y,z */
-		Model = glm::rotate(Model, angleX, glm::vec3(1, 0, 0));
-		Model = glm::rotate(Model, angleY, glm::vec3(0, 1, 0));
-		Model = glm::rotate(Model, angleZ, glm::vec3(0, 0, 1));
 		glm::mat4 Save = Model;
 
 
