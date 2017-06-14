@@ -518,6 +518,8 @@ int main(void)
 		fprintf(stderr, "Failed to initialize GLFW\n");
 		exit(EXIT_FAILURE);
 	}
+	
+	/* initialise the correct version of openGL */
 	instantiateVersion();
 
 
@@ -565,7 +567,7 @@ int main(void)
 	// Shader auch benutzen !
 	glUseProgram(programID);
 
-	//Obj3D *ob = new Obj3D("teapot.obj");
+	Obj3D *ob = new Obj3D("house.obj");
 	//Load the texture
 	GLuint Texture = loadBMP_custom("door.bmp");
 
@@ -592,7 +594,6 @@ int main(void)
 
 		// Camera matrix
 		// View ist die Camera
-
 		View = glm::lookAt(cameraPos, cameraPos + cameraFront + (neigungXVec * neigungX), cameraUp);
 
 
@@ -611,7 +612,7 @@ int main(void)
 		Model = glm::rotate(Model, angleX, glm::vec3(1, 0, 0));
 		Model = glm::rotate(Model, angleY, glm::vec3(0, 1, 0));
 		Model = glm::rotate(Model, angleZ, glm::vec3(0, 0, 1));
-		drawHouse();
+		//drawHouse();
 		openDoor();
 
 		glm::mat4 Save = Model;
@@ -634,8 +635,8 @@ int main(void)
 		//Model = glm::rotate(Model, angleZSeq3, glm::vec3(0, 0, 1));
 		//drawSeq(0.3);
 
-		//glm::vec4 lightPos = Model * glm::vec4(0, 0.3, 0, 1);
-		//glUniform3f(glGetUniformLocation(programID, "LightPosition_worldspace"), lightPos.x, lightPos.y, lightPos.z);
+		glm::vec4 lightPos = Model * glm::vec4(0, 0.3, 0, 1);
+		glUniform3f(glGetUniformLocation(programID, "LightPosition_worldspace"), lightPos.x, lightPos.y, lightPos.z);
 
 		//Model = Save;
 		//Model = glm::translate(Model, glm::vec3(0.5, 0.0, 0.0)); //aenderung der Position des Objektes
@@ -644,7 +645,12 @@ int main(void)
 
 
 		sendMVP();
-		//ob->draw();
+
+		Model = glm::mat4(1.0f);
+		Model = glm::rotate(Model, angleX, glm::vec3(1, 0, 0));
+		Model = glm::rotate(Model, angleY, glm::vec3(0, 1, 0));
+		Model = glm::rotate(Model, angleZ, glm::vec3(0, 0, 1));
+		ob->draw();
 
 
 
@@ -679,7 +685,7 @@ int main(void)
 		do_movement();
 
 		/* Licht */
-		glm::vec3 lightPos = glm::vec3(4, 4, -4);
+		//glm::vec3 lightPos = glm::vec3(4, 4, -4);
 	}
 
 	// Cleanup VBO and shader
@@ -689,7 +695,7 @@ int main(void)
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
-	//delete (ob);
+	delete (ob);
 	return 0;
 }
 
