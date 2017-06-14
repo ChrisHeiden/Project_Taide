@@ -5,13 +5,15 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
+
+
 #include "shader.hpp"
 #include "objects.hpp"
 #include "objloader.hpp"
 #include "texture.hpp"
-#include "obj3d.h"
+#include "obj.h"
 
-#include <iostream>
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
@@ -203,71 +205,6 @@ void instantiateVersion()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
-
-/* DRAW THE OUTSIDE OF THE GALERY IN THE SCENE */
-void drawHouse() {
-	glm::mat4 Save = Model;
-
-	/* Draw the door
-	Model = glm::scale(Model, glm::vec3(0.5, 1.1, 0.05)); 
-	sendMVP();
-	drawCube();
-	Model = Save;
-
-	if (initialised == false) {
-		initialised = true;
-		Door = Model;
-
-		for (int i = 0; i < 16; ++i) {
-			//cout << Door[i] << endl;
-		}
-	}
-	
-	/* Draw front - right*/
-	Model = glm::translate(Model, glm::vec3(1.2, 0, 0));
-	sendMVP();
-	drawHouse2();
-	drawRoof();
-	drawDoor();
-	Model = Save;
-	
-	/* Draw front - left
-	Model = glm::scale(Model, glm::vec3(2.5, 1, 0.05));
-	Model = glm::translate(Model, glm::vec3(-1.2, 0, 0));
-	sendMVP();
-	drawCube();
-	Model = Save;
-
-	/* Draw side - right
-	Model = glm::scale(Model, glm::vec3(0.05, 1, 25));
-	Model = glm::translate(Model, glm::vec3(110, 0, 1));
-	sendMVP();
-	drawCube();
-	Model = Save;
-
-	/* Draw side - left
-	Model = glm::scale(Model, glm::vec3(0.05, 1, 25));
-	Model = glm::translate(Model, glm::vec3(-110, 0, 1));
-	sendMVP();
-	drawCube();
-	Model = Save;
-
-
-	/* Draw back - right
-	Model = glm::scale(Model, glm::vec3(3, 1, 0.05));
-	Model = glm::translate(Model, glm::vec3(0.95, 0, 1000));
-	sendMVP();
-	drawCube();
-	Model = Save;
-
-	/* Draw back - left
-	Model = glm::scale(Model, glm::vec3(3, 1, 0.05));
-	Model = glm::translate(Model, glm::vec3(-0.95, 0, 1000));
-	sendMVP();
-	drawCube();
-	Model = Save;*/
-	
-}
  
 /* changes the Curser icon ig the users curser is over the door */
 static void curserPosionCallback(GLFWwindow* window, double xpos, double ypos)
@@ -326,182 +263,6 @@ void openDoor()
 		cout << "Door open" << endl;
 	}
 }
-
-/*
-void renderScene(void) {
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_TEXTURE_2D);
-
-	// Sky
-	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, textureSky);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTranslatef(0, 0, -10);
-	glBegin(GL_QUADS);
-	glTexCoord3f(0.0, 1.0, 0.1);  glVertex3f(-10, 10, 0);
-	glTexCoord3f(1.0, 1.0, 0.1);  glVertex3f(10, 10, 0);
-	glTexCoord3f(1.0, 0.0, 0.1);  glVertex3f(10, -10, 0);
-	glTexCoord3f(0.0, 0.0, 0.1);  glVertex3f(-10, -10, 0);
-	glEnd();
-	glPopMatrix();
-
-	// Grass
-	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, textureGrass);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTranslatef(0, 0, -6);
-	glRotatef(angle, 0.0, 1.0, 0.0);
-	glBegin(GL_QUADS);
-	glTexCoord3f(0.0, 70.0, 1);  glVertex3f(-50, -1.5, 50);
-	glTexCoord3f(0.0, 0.0, -1);  glVertex3f(-50, -1.5, -50);
-	glTexCoord3f(70.0, 0.0, -1);  glVertex3f(50, -1.5, -50);
-	glTexCoord3f(70.0, 70.0, 1);  glVertex3f(50, -1.5, 50);
-	glEnd();
-	glPopMatrix();
-
-	// Front side
-	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, textureBrick);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTranslatef(0, 0, -6);
-	glRotatef(angle, 0.0, 1.0, 0.0);
-	glBegin(GL_QUADS);  // Wall
-	glTexCoord3f(0.0, 2.0, 0.1);  glVertex3f(-2, 0, 1);
-	glTexCoord3f(4.0, 2.0, 0.1);  glVertex3f(2, 0, 1);
-	glTexCoord3f(4.0, 0.0, 0.1);  glVertex3f(2, -1.5, 1);
-	glTexCoord3f(0.0, 0.0, 0.1);  glVertex3f(-2, -1.5, 1);
-	glEnd();
-
-	glBindTexture(GL_TEXTURE_2D, textureRoof);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBegin(GL_QUADS);  // Roof
-	glTexCoord3f(0.0, 2.0, 0); glVertex3f(-2.2, 0.5, 0);
-	glTexCoord3f(4.0, 2.0, 0); glVertex3f(2.2, 0.5, 0);
-	glTexCoord3f(4.0, 0.0, 1.25); glVertex3f(2.2, -0.1, 1.25);
-	glTexCoord3f(0.0, 0.0, 1.25); glVertex3f(-2.2, -0.1, 1.25);
-	glEnd();
-
-	glBindTexture(GL_TEXTURE_2D, textureDoor);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBegin(GL_QUADS);  // Door
-	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(-0.3, -0.4, 1.0001);
-	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(0.3, -0.4, 1.0001);
-	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(0.3, -1.5, 1.0001);
-	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(-0.3, -1.5, 1.0001);
-	glEnd();
-
-	glBindTexture(GL_TEXTURE_2D, textureWindow);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBegin(GL_QUADS);  // Window Left
-	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(-1.5, -0.3, 1.0001);
-	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(-0.75, -0.3, 1.0001);
-	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(-0.75, -0.8, 1.0001);
-	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(-1.5, -0.8, 1.0001);
-	glEnd();
-
-	glBegin(GL_QUADS);  // Window Right
-	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(1.5, -0.3, 1.0001);
-	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(0.75, -0.3, 1.0001);
-	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(0.75, -0.8, 1.0001);
-	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(1.5, -0.8, 1.0001);
-	glEnd();
-	glPopMatrix();
-
-	// Back side
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureBrick);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTranslatef(0, 0, -6);
-	glRotatef(angle, 0.0, 1.0, 0.0);
-	glBegin(GL_QUADS);  // Wall
-	glTexCoord3f(0.0, 2.0, -1);  glVertex3f(-2, 0, -1);
-	glTexCoord3f(4.0, 2.0, -1);  glVertex3f(2, 0, -1);
-	glTexCoord3f(4.0, 0.0, -1);  glVertex3f(2, -1.5, -1);
-	glTexCoord3f(0.0, 0.0, -1);  glVertex3f(-2, -1.5, -1);
-	glEnd();
-
-	glBindTexture(GL_TEXTURE_2D, textureRoof);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBegin(GL_QUADS);  // Roof
-	glTexCoord3f(0.0, 2.0, 0); glVertex3f(-2.2, 0.5, 0);
-	glTexCoord3f(4.0, 2.0, 0); glVertex3f(2.2, 0.5, 0);
-	glTexCoord3f(4.0, 0.0, -1.25); glVertex3f(2.2, -0.1, -1.25);
-	glTexCoord3f(0.0, 0.0, -1.25); glVertex3f(-2.2, -0.1, -1.25);
-	glEnd();
-
-	glBindTexture(GL_TEXTURE_2D, textureWindow);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBegin(GL_QUADS);  // Window Left
-	glTexCoord3f(0.0, 1.0, -1.0001); glVertex3f(-1.5, -0.3, -1.0001);
-	glTexCoord3f(1.0, 1.0, -1.0001); glVertex3f(-0.75, -0.3, -1.0001);
-	glTexCoord3f(1.0, 0.0, -1.0001); glVertex3f(-0.75, -0.8, -1.0001);
-	glTexCoord3f(0.0, 0.0, -1.0001); glVertex3f(-1.5, -0.8, -1.0001);
-	glEnd();
-
-	glBegin(GL_QUADS);  // Window Right
-	glTexCoord3f(0.0, 1.0, 1.0001); glVertex3f(1.5, -0.3, -1.0001);
-	glTexCoord3f(1.0, 1.0, 1.0001); glVertex3f(0.75, -0.3, -1.0001);
-	glTexCoord3f(1.0, 0.0, 1.0001); glVertex3f(0.75, -0.8, -1.0001);
-	glTexCoord3f(0.0, 0.0, 1.0001); glVertex3f(1.5, -0.8, -1.0001);
-	glEnd();
-	glPopMatrix();
-
-	// Right side
-	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, textureBrick);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTranslatef(0, 0, -6);
-	glRotatef(angle, 0.0, 1.0, 0.0);
-	glBegin(GL_QUADS);  // Wall
-	glTexCoord3f(0.0, 2.0, 1); glVertex3f(2, 0, 1);
-	glTexCoord3f(2.0, 2.0, -1); glVertex3f(2, 0, -1);
-	glTexCoord3f(2.0, 0.0, -1); glVertex3f(2, -1.5, -1);
-	glTexCoord3f(0.0, 0.0, 1); glVertex3f(2, -1.5, 1);
-	glEnd();
-
-	glBegin(GL_TRIANGLES);  // Wall Upper
-	glTexCoord3f(0.0, 1.0, 0); glVertex3f(2, 0.5, 0);
-	glTexCoord3f(1.0, 0.0, 1); glVertex3f(2, 0, 1);
-	glTexCoord3f(-1.0, 0.0, -1); glVertex3f(2, 0, -1);
-	glEnd();
-	glPopMatrix();
-
-	// Left side
-	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, textureBrick);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTranslatef(0, 0, -6);
-	glRotatef(angle, 0.0, 1.0, 0.0);
-	glBegin(GL_QUADS);  // Wall
-	glTexCoord3f(0.0, 2.0, 1);    glVertex3f(-2, 0, 1);
-	glTexCoord3f(2.0, 2.0, -1);    glVertex3f(-2, 0, -1);
-	glTexCoord3f(2.0, 0.0, -1);    glVertex3f(-2, -1.5, -1);
-	glTexCoord3f(0.0, 0.0, 1);    glVertex3f(-2, -1.5, 1);
-	glEnd();
-
-	glBegin(GL_TRIANGLES);  // Wall Upper
-	glTexCoord3f(0.0, 1.0, 0);    glVertex3f(-2, 0.5, 0);
-	glTexCoord3f(1.0, 0.0, 1);    glVertex3f(-2, 0, 1);
-	glTexCoord3f(-1.0, 0.0, -1);    glVertex3f(-2, 0, -1);
-	glEnd();
-	glPopMatrix();
-
-	//glutSwapBuffers();
-}
-*/
 
 /* if the user press "esc" it will close the window */
 void processInput(GLFWwindow *window)
@@ -567,9 +328,12 @@ int main(void)
 	// Shader auch benutzen !
 	glUseProgram(programID);
 
-	Obj3D *ob = new Obj3D("house.obj");
+	obj *houseObj = new obj("house.obj");
+	obj *doorObj = new obj("door.obj");
 	//Load the texture
-	GLuint Texture = loadBMP_custom("door.bmp");
+	GLuint TextureHouse = loadBMP_custom("bricks.bmp");
+	GLuint TextureDoor = loadBMP_custom("door.bmp");
+
 
 
 	// Eventloop
@@ -581,7 +345,8 @@ int main(void)
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture);
+		glBindTexture(GL_TEXTURE_2D, TextureHouse);
+		glBindTexture(GL_TEXTURE_2D, TextureDoor);
 
 		// Set our "myTextureSampler" sampler to user Texture Unit 0
 		glUniform1i(glGetUniformLocation(programID, "myTextureSampler"), 0);
@@ -650,8 +415,8 @@ int main(void)
 		Model = glm::rotate(Model, angleX, glm::vec3(1, 0, 0));
 		Model = glm::rotate(Model, angleY, glm::vec3(0, 1, 0));
 		Model = glm::rotate(Model, angleZ, glm::vec3(0, 0, 1));
-		ob->draw();
-
+		houseObj->draw();
+		doorObj->draw();
 
 
 
@@ -691,11 +456,13 @@ int main(void)
 	// Cleanup VBO and shader
 	//glDeleteBuffers(1, &vertexbuffer);
 
-	glDeleteTextures(1, &Texture);
+	glDeleteTextures(1, &TextureHouse);
+	glDeleteTextures(1, &TextureDoor);
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
-	delete (ob);
+	delete (houseObj);
+	delete (doorObj);
 	return 0;
 }
 
