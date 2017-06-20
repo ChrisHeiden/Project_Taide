@@ -122,8 +122,8 @@
     </PostBuildEvent>
     <Link>
       <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;external\glfw3d.lib;external\glew32sd.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;external\glfw3d.lib;external\glew32sd.lib;soil2-debug.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Studium\HTW Berlin\Semester 4\Computergraphiken\Eigenes Projekt\Project_Taide\external\SOIL2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>
       </ImportLibrary>
@@ -318,17 +318,32 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="obj.cpp" />
     <ClCompile Include="objects.cpp" />
     <ClCompile Include="objloader.cpp" />
+    <ClCompile Include="Quelle.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="texture.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">external\glfw-3.1.2\include;external\glew-1.13.0;external\glm-0.9.4.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="obj.h" />
     <ClInclude Include="objects.hpp" />
     <ClInclude Include="objloader.hpp" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="shader.hpp" />
+    <ClInclude Include="shaderTexture.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="texture.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\cube.frag" />
+    <None Include="resources\shaders\cube.vs" />
+    <None Include="resources\shaders\lamp.frag" />
+    <None Include="resources\shaders\lamp.vs" />
+    <None Include="resources\shaders\lighting.frag" />
+    <None Include="resources\shaders\lighting.vs" />
+    <None Include="resources\shaders\skybox.frag" />
+    <None Include="resources\shaders\skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
